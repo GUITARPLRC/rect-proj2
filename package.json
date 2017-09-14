@@ -1,0 +1,30 @@
+{
+	"name": "rect-proj2",
+	"version": "1.0.0",
+	"description":
+		"Simple create rectangle, resize, and drag with layout create and save options.",
+	"main": "webpack.config.js",
+	"dependencies": {
+		"babel-core": "^6.26.0",
+		"babel-loader": "^7.1.2",
+		"babel-preset-env": "^1.6.0",
+		"babel-preset-react": "^6.24.1",
+		"css-loader": "^0.28.7",
+		"file-loader": "^0.11.2",
+		"react": "^15.6.1",
+		"react-dom": "^15.6.1",
+		"react-rnd": "^7.0.0",
+		"resolve-url-loader": "^2.1.0",
+		"style-loader": "^0.18.2",
+		"url-loader": "^0.5.9",
+		"webpack": "^3.5.6",
+		"webpack-dev-server": "^2.8.1"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"start": "webpack-dev-server --open --hot --inline",
+		"build": "webpack"
+	},
+	"author": "Chuck Reynolds",
+	"license": "ISC"
+}
