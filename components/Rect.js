@@ -4,25 +4,46 @@ export default class Rect extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			color: null
+			color: null,
+			showing: true
 		};
+
+		this.handleSingleClick = this.handleSingleClick.bind(this);
+		this.handleDoubleClick = this.handleDoubleClick.bind(this);
 	}
+
 	componentWillMount() {
 		let color = this.props.pickColor();
 		this.setState({ color });
 	}
 
+	handleSingleClick() {
+		let color = this.props.pickColor();
+		this.setState({ color });
+	}
+
+	handleDoubleClick() {
+		let showing = this.props.deleteRect();
+		this.setState({ showing });
+	}
+
 	render() {
 		return (
-			<div
-				className="rect"
-				style={{
-					backgroundColor: this.state.color,
-					border: '1px solid #000',
-					height: 100,
-					width: 200
-				}}
-			/>
+			<div>
+				{this.state.showing && (
+					<div
+						className="rect"
+						style={{
+							backgroundColor: this.state.color,
+							border: '1px solid #000',
+							height: 100,
+							width: 200
+						}}
+						onClick={this.handleSingleClick}
+						onDoubleClick={this.handleDoubleClick}
+					/>
+				)}
+			</div>
 		);
 	}
 }
