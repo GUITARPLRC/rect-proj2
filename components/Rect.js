@@ -4,9 +4,15 @@ export default class Rect extends Component {
 	constructor() {
 		super();
 		this.state = {
-			colors: ['#ccc', '#333', '#777']
+			colors: ['#ccc', '#333', '#777'],
+			color: null
 		};
 		this.pickColor = this.pickColor.bind(this);
+	}
+
+	componentWillMount() {
+		let color = this.pickColor();
+		this.setState({ color });
 	}
 
 	pickColor() {
@@ -24,6 +30,7 @@ export default class Rect extends Component {
 			<div
 				className="rect"
 				style={{
+					backgroundColor: this.state.color,
 					border: '1px solid #000',
 					height: 100,
 					width: 200
