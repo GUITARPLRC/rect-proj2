@@ -19,16 +19,16 @@ module.exports = {
 			},
 			{
 				test: /\.(woff2?|svg)$/,
-				loader: 'url-loader?limit=10000'
+				use: 'url-loader?limit=10000'
 			},
 			{
 				test: /\.(ttf|eot)$/,
-				loader: 'file-loader'
+				use: 'file-loader'
 			},
 			{
 				test: /\.js$/,
 				exclude: /node_modules/,
-				use: 'babel-loader'
+				loader: 'babel-loader'
 			}
 		]
 	}
