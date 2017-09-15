@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import Rnd from 'react-rnd';
+
 export default class Rect extends Component {
 	constructor(props) {
 		super(props);
@@ -29,18 +31,22 @@ export default class Rect extends Component {
 
 	render() {
 		return (
-			<div>
+			<div
+				onClick={this.handleSingleClick}
+				onDoubleClick={this.handleDoubleClick}>
 				{this.state.showing && (
-					<div
+					<Rnd
 						className="rect"
+						default={{
+							x: 0,
+							y: 0,
+							width: 200,
+							height: 100
+						}}
 						style={{
 							backgroundColor: this.state.color,
-							border: '1px solid #000',
-							height: 100,
-							width: 200
+							border: '1px solid #000'
 						}}
-						onClick={this.handleSingleClick}
-						onDoubleClick={this.handleDoubleClick}
 					/>
 				)}
 			</div>

@@ -21,6 +21,29 @@ let fieldStyle = {
 };
 
 export default class Controls extends Component {
+	constructor() {
+		super();
+		this.state = {
+			saveName: ''
+		};
+
+		this.handleSaveName = this.handleSaveName.bind(this);
+		this.handleSave = this.handleSave.bind(this);
+	}
+
+	handleSaveName(event) {
+		this.setState({ saveName: `${event.target.value} layout` });
+	}
+
+	handleSave() {
+		if (localStorage) {
+			localStorage.setItem(
+				this.state.saveName,
+				document.querySelector('#board').innerHTML
+			);
+		}
+	}
+
 	render() {
 		return (
 			<div id="controls" style={controlStyles}>
@@ -44,14 +67,23 @@ export default class Controls extends Component {
 					maxLength="20"
 					placeholder="Enter layout name (max: 20)"
 					style={fieldStyle}
+					onChange={this.handleSaveName}
 				/>
 
-				<button id="save" className="btn btn-success" style={buttonStyle}>
+				<button
+					id="save"
+					className="btn btn-success"
+					style={buttonStyle}
+					onClick={this.handleSave}>
 					Save Layout
 				</button>
 
-				<select style={fieldStyle}>
+				<select style={fieldStyle} onChange={this.props.handleLayoutChange}>
 					<option>-- Select Saved Layout --</option>
+					{this.props.layoutList &&
+						this.props.layoutList.map((each, key) => {
+							return <option key={key}>{each}</option>;
+						})}
 				</select>
 
 				<button

@@ -27,6 +27,6 @@ export default class Board extends Component {
 				/>
 			);
 		}
-		return <div>{list}</div>;
+		return <div id="board">{list}</div>;
 	}
 }
