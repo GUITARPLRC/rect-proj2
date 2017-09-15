@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
 
+/*------------------------
+/
+/	COMPONENT STYLES
+/
+/--------------------------
+*/
 let controlStyles = {
 	backgroundColor: '#ddd',
 	display: 'flex',
@@ -20,28 +26,79 @@ let fieldStyle = {
 	padding: 5
 };
 
+/*------------------------
+/
+/	COMPONENT
+/
+/-------------------------
+*/
+
 export default class Controls extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
-			saveName: ''
+			saveName: '',
+			selectedName: ''
 		};
 
+		this.clearBoard = this.clearBoard.bind(this);
+		this.handleLayoutChange = this.handleLayoutChange.bind(this);
 		this.handleSaveName = this.handleSaveName.bind(this);
 		this.handleSave = this.handleSave.bind(this);
 	}
 
-	handleSaveName(event) {
-		this.setState({ saveName: `${event.target.value} layout` });
+	clearBoard() {
+		this.props.handleHowManyRects(0);
+
+		// remove all div#board child Nodes
+		while (document.querySelector('#board').hasChildNodes()) {
+			document
+				.querySelector('#board')
+				.removeChild(document.querySelector('#board').firstChild);
+		}
 	}
 
+	// to keep input as controlled component
+	handleSaveName(event) {
+		this.setState({ saveName: event.target.value });
+	}
+
+	// save to localStorage (if possible)
 	handleSave() {
+		// check if input is empty
+		if (this.state.saveName == '') {
+			// TODO need better UI/UX
+			alert('Please enter a name for the layout before saving. Thanks.');
+			return;
+		}
+
 		if (localStorage) {
 			localStorage.setItem(
-				this.state.saveName,
+				`${this.state.saveName} layout`,
 				document.querySelector('#board').innerHTML
 			);
+		} else {
+			// TODO need better UI/UX
+			alert(
+				'Sorry you can not save a layout at this time. (ERR: localStorage)'
+			);
 		}
+
+		this.props.populateSavedLayouts();
+	}
+
+	// load saved layout
+	handleLayoutChange(event) {
+		let name = `${event.target.value} layout`;
+
+		// set controlled input saveName to help UX
+		this.setState({
+			saveName: event.target.value,
+			selectedName: event.target.value
+		});
+
+		// TODO find alt for innerHTML = BAD
+		document.querySelector('#board').innerHTML = localStorage.getItem(name);
 	}
 
 	render() {
@@ -55,7 +112,7 @@ export default class Controls extends Component {
 				</button>
 
 				<button
-					onClick={this.props.clearBoard}
+					onClick={this.clearBoard}
 					className="btn btn-warning"
 					style={buttonStyle}>
 					Clear Board
@@ -68,6 +125,7 @@ export default class Controls extends Component {
 					placeholder="Enter layout name (max: 20)"
 					style={fieldStyle}
 					onChange={this.handleSaveName}
+					value={this.state.saveName}
 				/>
 
 				<button
@@ -78,7 +136,7 @@ export default class Controls extends Component {
 					Save Layout
 				</button>
 
-				<select style={fieldStyle} onChange={this.props.handleLayoutChange}>
+				<select style={fieldStyle} onChange={this.handleLayoutChange}>
 					<option>-- Select Saved Layout --</option>
 					{this.props.layoutList &&
 						this.props.layoutList.map((each, key) => {
@@ -89,7 +147,8 @@ export default class Controls extends Component {
 				<button
 					id="deleteLayout"
 					className="btn btn-danger"
-					style={buttonStyle}>
+					style={buttonStyle}
+					onClick={() => this.props.deleteSavedLayout(this.state.selectedName)}>
 					Delete Selected Layout
 				</button>
 			</div>

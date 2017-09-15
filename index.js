@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import Parent from './components/Parent';
+import Main from './components/Main';
 
 class App extends Component {
 	render() {
-		return <Parent />;
+		return <Main />;
 	}
 }
 

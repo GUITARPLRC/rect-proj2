@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 
-import Rnd from 'react-rnd';
+import Rnd from 'react-rnd'; // resize and drag lib
+
+/*------------------------
+/
+/	COMPONENT
+/
+/-------------------------
+*/
 
 export default class Rect extends Component {
 	constructor(props) {
@@ -14,19 +21,18 @@ export default class Rect extends Component {
 		this.handleDoubleClick = this.handleDoubleClick.bind(this);
 	}
 
-	componentWillMount() {
-		let color = this.props.pickColor();
-		this.setState({ color });
+	componentDidMount() {
+		this.handleSingleClick();
 	}
 
 	handleSingleClick() {
 		let color = this.props.pickColor();
+
 		this.setState({ color });
 	}
 
 	handleDoubleClick() {
-		let showing = this.props.deleteRect();
-		this.setState({ showing });
+		this.setState({ showing: !this.state.showing });
 	}
 
 	render() {
