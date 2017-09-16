@@ -75,17 +75,20 @@ export default class Main extends Component {
 
 	clearBoard() {
 		this.setState({ showing: false, loadingSave: false });
+		this.handleHowManyRects(0);
 	}
 
 	handleSavedLayout(array) {
 		this.clearBoard();
 
-		this.setState({
-			savedArray: array,
-			showing: true,
-			loadingSave: true,
-			howManyRects: array.length
-		});
+		setTimeout(() => {
+			this.setState({
+				savedArray: array,
+				showing: true,
+				loadingSave: true,
+				howManyRects: array.length
+			});
+		}, 100);
 	}
 
 	render() {

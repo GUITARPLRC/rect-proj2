@@ -45,10 +45,12 @@ export default class Controls extends Component {
 		this.handleLayoutChange = this.handleLayoutChange.bind(this);
 		this.handleSaveName = this.handleSaveName.bind(this);
 		this.handleSave = this.handleSave.bind(this);
+		this.handleDelete = this.handleDelete.bind(this);
 	}
 
 	clearBoard() {
-		this.props.handleHowManyRects(0);
+		let select = document.querySelector('#select');
+		select.selectedIndex = 0;
 		this.props.clearBoard();
 		this.setState({ saveName: '' });
 	}
@@ -68,12 +70,16 @@ export default class Controls extends Component {
 		}
 
 		let board = document.querySelector('#board');
-		let elements = [];
+		let elements = []; // to store layout rect props for localStorage
+
 		if (board.children) {
 			[...board.children].forEach(each => {
-				let x1 = each.firstChild.style.transform.indexOf('('); // to get translateX
+				// to get translateX
+				let x1 = each.firstChild.style.transform.indexOf('(');
 				let x2 = each.firstChild.style.transform.indexOf(',');
-				let y1 = each.firstChild.style.transform.indexOf(','); // to get translateY
+
+				// to get translateY
+				let y1 = each.firstChild.style.transform.indexOf(',');
 				let y2 = each.firstChild.style.transform.indexOf(')');
 
 				elements.push({
@@ -103,14 +109,14 @@ export default class Controls extends Component {
 
 	// load saved layout
 	handleLayoutChange(event) {
-		if (
-			event.target.value === '-- Select Saved Layout --' ||
-			!event.target.value
-		) {
+		if (event.target.value === '-- Select Saved Layout --') {
+			this.setState({ saveName: '' });
 			return;
 		}
 
 		let name = `${event.target.value} layout`;
+
+		// get layout props from localStorage
 		let array = JSON.parse(localStorage.getItem(name));
 
 		// set controlled input saveName to help UX
@@ -120,6 +126,17 @@ export default class Controls extends Component {
 		});
 
 		this.props.handleSavedLayout(array);
+	}
+
+	handleDelete() {
+		// reset select element to default
+		let select = document.querySelector('#select');
+		select.selectedIndex = 0;
+
+		// reset save name input
+		this.setState({ saveName: '' });
+
+		this.props.deleteSavedLayout(this.state.selectedName);
 	}
 
 	render() {
@@ -157,8 +174,11 @@ export default class Controls extends Component {
 					Save Layout
 				</button>
 
-				<select style={fieldStyle} onChange={this.handleLayoutChange}>
-					<option>-- Select Saved Layout --</option>
+				<select
+					id="select"
+					style={fieldStyle}
+					onChange={this.handleLayoutChange}>
+					<option default>-- Select Saved Layout --</option>
 					{this.props.layoutList &&
 						this.props.layoutList.map((each, key) => {
 							return <option key={key}>{each}</option>;
@@ -169,10 +189,7 @@ export default class Controls extends Component {
 					id="deleteLayout"
 					className="btn btn-danger"
 					style={buttonStyle}
-					onClick={() => {
-						this.setState({ saveName: '' });
-						this.props.deleteSavedLayout(this.state.selectedName);
-					}}>
+					onClick={this.handleDelete}>
 					Delete Selected Layout
 				</button>
 			</div>
