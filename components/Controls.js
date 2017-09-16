@@ -50,6 +50,7 @@ export default class Controls extends Component {
 	clearBoard() {
 		this.props.handleHowManyRects(0);
 		this.props.clearBoard();
+		this.setState({ saveName: '' });
 	}
 
 	// to keep input as controlled component
@@ -68,20 +69,22 @@ export default class Controls extends Component {
 
 		let board = document.querySelector('#board');
 		let elements = [];
-		[...board.children].forEach(each => {
-			let x1 = each.firstChild.style.transform.indexOf('('); // to get translateX
-			let x2 = each.firstChild.style.transform.indexOf(',');
-			let y1 = each.firstChild.style.transform.indexOf(','); // to get translateY
-			let y2 = each.firstChild.style.transform.indexOf(')');
+		if (board.children) {
+			[...board.children].forEach(each => {
+				let x1 = each.firstChild.style.transform.indexOf('('); // to get translateX
+				let x2 = each.firstChild.style.transform.indexOf(',');
+				let y1 = each.firstChild.style.transform.indexOf(','); // to get translateY
+				let y2 = each.firstChild.style.transform.indexOf(')');
 
-			elements.push({
-				width: each.firstChild.style.width,
-				height: each.firstChild.style.height,
-				x: parseInt(each.firstChild.style.transform.slice(x1 + 1, x2 - 2)),
-				y: parseInt(each.firstChild.style.transform.slice(y1 + 1, y2 - 1)),
-				bgColor: each.firstChild.style.backgroundColor
+				elements.push({
+					width: each.firstChild.style.width,
+					height: each.firstChild.style.height,
+					x: parseInt(each.firstChild.style.transform.slice(x1 + 1, x2 - 2)),
+					y: parseInt(each.firstChild.style.transform.slice(y1 + 1, y2 - 1)),
+					bgColor: each.firstChild.style.backgroundColor
+				});
 			});
-		});
+		}
 
 		if (localStorage) {
 			localStorage.setItem(
@@ -100,7 +103,10 @@ export default class Controls extends Component {
 
 	// load saved layout
 	handleLayoutChange(event) {
-		if (event.target.value === '-- Select Saved Layout --') {
+		if (
+			event.target.value === '-- Select Saved Layout --' ||
+			!event.target.value
+		) {
 			return;
 		}
 

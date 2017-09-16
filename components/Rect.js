@@ -27,7 +27,6 @@ export default class Rect extends Component {
 
 	componentWillMount() {
 		if (this.props.savedArray) {
-			console.log(this.props.savedArray);
 			let saved = this.props.savedArray;
 			this.setState({
 				color: saved.color,
@@ -40,7 +39,12 @@ export default class Rect extends Component {
 	}
 
 	componentDidMount() {
-		this.handleSingleClick();
+		if (this.props.savedArray) {
+			this.setState({ color: this.props.savedArray.bgColor });
+			return;
+		}
+
+		this.handleSingleClick(); // set color of rects if not loading saved
 	}
 
 	handleSingleClick() {
@@ -51,6 +55,9 @@ export default class Rect extends Component {
 
 	handleDoubleClick() {
 		this.setState({ showing: !this.state.showing });
+
+		let howMany = this.props.howManyRects;
+		this.props.handleHowManyRects((howMany -= 1));
 	}
 
 	render() {

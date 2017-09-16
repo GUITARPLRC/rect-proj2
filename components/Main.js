@@ -17,7 +17,7 @@ export default class Main extends Component {
 			howManyRects: 0, // so app knows how many rects to render
 			layoutList: null, // to render options list
 			showing: true, // to clear rects
-			loadingSave: false, // to check if loading
+			loadingSave: false, // loading check
 			savedArray: null
 		};
 
@@ -78,11 +78,13 @@ export default class Main extends Component {
 	}
 
 	handleSavedLayout(array) {
+		this.clearBoard();
+
 		this.setState({
-			howMany: array.length,
+			savedArray: array,
 			showing: true,
 			loadingSave: true,
-			savedArray: array
+			howManyRects: array.length
 		});
 	}
 
@@ -102,12 +104,14 @@ export default class Main extends Component {
 				{this.state.loadingSave ? (
 					<Board
 						howManyRects={this.state.howManyRects}
+						handleHowManyRects={this.handleHowManyRects}
 						showing={this.state.showing}
 						savedArray={this.state.savedArray}
 					/>
 				) : (
 					<Board
 						howManyRects={this.state.howManyRects}
+						handleHowManyRects={this.handleHowManyRects}
 						showing={this.state.showing}
 					/>
 				)}
