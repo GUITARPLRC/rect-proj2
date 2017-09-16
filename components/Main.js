@@ -14,14 +14,19 @@ export default class Main extends Component {
 	constructor() {
 		super();
 		this.state = {
-			howManyRects: 0 /* so app knows how many rects to render */,
-			layoutList: null /* to render options list */
+			howManyRects: 0, // so app knows how many rects to render
+			layoutList: null, // to render options list
+			showing: true, // to clear rects
+			loadingSave: false, // to check if loading
+			savedArray: null
 		};
 
 		this.addRect = this.addRect.bind(this);
 		this.handleHowManyRects = this.handleHowManyRects.bind(this);
 		this.populateSavedLayouts = this.populateSavedLayouts.bind(this);
 		this.deleteSavedLayout = this.deleteSavedLayout.bind(this);
+		this.clearBoard = this.clearBoard.bind(this);
+		this.handleSavedLayout = this.handleSavedLayout.bind(this);
 	}
 
 	componentWillMount() {
@@ -31,7 +36,7 @@ export default class Main extends Component {
 	addRect() {
 		let howMany = this.state.howManyRects + 1;
 
-		this.setState({ howManyRects: howMany });
+		this.setState({ howManyRects: howMany, showing: true });
 	}
 
 	// used to clear board in Control Component
@@ -63,13 +68,22 @@ export default class Main extends Component {
 
 		localStorage.removeItem(layoutName);
 
-		while (document.querySelector('#board').hasChildNodes()) {
-			document
-				.querySelector('#board')
-				.removeChild(document.querySelector('#board').firstChild);
-		}
+		this.clearBoard();
 
 		this.populateSavedLayouts();
+	}
+
+	clearBoard() {
+		this.setState({ showing: false, loadingSave: false });
+	}
+
+	handleSavedLayout(array) {
+		this.setState({
+			howMany: array.length,
+			showing: true,
+			loadingSave: true,
+			savedArray: array
+		});
 	}
 
 	render() {
@@ -78,14 +92,25 @@ export default class Main extends Component {
 				<Controls
 					addRect={this.addRect}
 					clearBoard={this.clearBoard}
-					layoutList={this.state.layoutList}
-					handleLayoutChange={this.handleLayoutChange}
 					deleteSavedLayout={this.deleteSavedLayout}
 					populateSavedLayouts={this.populateSavedLayouts}
-					howManyRects={this.props.howManyRects}
 					handleHowManyRects={this.handleHowManyRects}
+					layoutList={this.state.layoutList}
+					howManyRects={this.state.howManyRects}
+					handleSavedLayout={this.handleSavedLayout}
 				/>
-				<Board howManyRects={this.state.howManyRects} />
+				{this.state.loadingSave ? (
+					<Board
+						howManyRects={this.state.howManyRects}
+						showing={this.state.showing}
+						savedArray={this.state.savedArray}
+					/>
+				) : (
+					<Board
+						howManyRects={this.state.howManyRects}
+						showing={this.state.showing}
+					/>
+				)}
 			</div>
 		);
 	}

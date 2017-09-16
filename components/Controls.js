@@ -49,13 +49,7 @@ export default class Controls extends Component {
 
 	clearBoard() {
 		this.props.handleHowManyRects(0);
-
-		// remove all div#board child Nodes
-		while (document.querySelector('#board').hasChildNodes()) {
-			document
-				.querySelector('#board')
-				.removeChild(document.querySelector('#board').firstChild);
-		}
+		this.props.clearBoard();
 	}
 
 	// to keep input as controlled component
@@ -72,10 +66,27 @@ export default class Controls extends Component {
 			return;
 		}
 
+		let board = document.querySelector('#board');
+		let elements = [];
+		[...board.children].forEach(each => {
+			let x1 = each.firstChild.style.transform.indexOf('('); // to get translateX
+			let x2 = each.firstChild.style.transform.indexOf(',');
+			let y1 = each.firstChild.style.transform.indexOf(','); // to get translateY
+			let y2 = each.firstChild.style.transform.indexOf(')');
+
+			elements.push({
+				width: each.firstChild.style.width,
+				height: each.firstChild.style.height,
+				x: parseInt(each.firstChild.style.transform.slice(x1 + 1, x2 - 2)),
+				y: parseInt(each.firstChild.style.transform.slice(y1 + 1, y2 - 1)),
+				bgColor: each.firstChild.style.backgroundColor
+			});
+		});
+
 		if (localStorage) {
 			localStorage.setItem(
 				`${this.state.saveName} layout`,
-				document.querySelector('#board').innerHTML
+				JSON.stringify(elements)
 			);
 		} else {
 			// TODO need better UI/UX
@@ -89,7 +100,12 @@ export default class Controls extends Component {
 
 	// load saved layout
 	handleLayoutChange(event) {
+		if (event.target.value === '-- Select Saved Layout --') {
+			return;
+		}
+
 		let name = `${event.target.value} layout`;
+		let array = JSON.parse(localStorage.getItem(name));
 
 		// set controlled input saveName to help UX
 		this.setState({
@@ -97,8 +113,7 @@ export default class Controls extends Component {
 			selectedName: event.target.value
 		});
 
-		// TODO find alt for innerHTML = BAD
-		document.querySelector('#board').innerHTML = localStorage.getItem(name);
+		this.props.handleSavedLayout(array);
 	}
 
 	render() {
@@ -148,7 +163,10 @@ export default class Controls extends Component {
 					id="deleteLayout"
 					className="btn btn-danger"
 					style={buttonStyle}
-					onClick={() => this.props.deleteSavedLayout(this.state.selectedName)}>
+					onClick={() => {
+						this.setState({ saveName: '' });
+						this.props.deleteSavedLayout(this.state.selectedName);
+					}}>
 					Delete Selected Layout
 				</button>
 			</div>

@@ -14,10 +14,17 @@ export default class Board extends Component {
 		super();
 		this.state = {
 			colors: ['#ddd', '#000', '#777'],
-			prevColor: null /* check for non duplicates */
+			prevColor: null, // check for non duplicates
+			savedArray: null
 		};
 
 		this.pickColor = this.pickColor.bind(this);
+	}
+
+	componentWillMount() {
+		if (this.props.savedArray) {
+			this.setState({ savedArray: this.props.savedArray });
+		}
 	}
 
 	pickColor() {
@@ -36,7 +43,24 @@ export default class Board extends Component {
 		let howMany = this.props.howManyRects;
 
 		for (let i = 0; i < howMany; i++) {
-			list.push(<Rect number={i} key={i} pickColor={this.pickColor} />);
+			{
+				this.state.savedArray
+					? list.push(
+							<Rect
+								key={i}
+								pickColor={this.pickColor}
+								showing={this.props.showing}
+								savedArray={savedArray[i]}
+							/>
+						)
+					: list.push(
+							<Rect
+								key={i}
+								pickColor={this.pickColor}
+								showing={this.props.showing}
+							/>
+						);
+			}
 		}
 		return <div id="board">{list}</div>;
 	}
