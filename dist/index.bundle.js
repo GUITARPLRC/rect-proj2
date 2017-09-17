@@ -22686,14 +22686,23 @@ var Main = function (_Component) {
 					loadingSave: true,
 					howManyRects: array.length
 				});
-			}, 100);
+			}, 50);
 		}
 	}, {
 		key: 'render',
 		value: function render() {
 			return _react2.default.createElement(
 				'div',
-				{ style: { display: 'flex', padding: '20px' } },
+				{ className: 'container-fluid' },
+				_react2.default.createElement(
+					'nav',
+					{ className: 'navbar navbar-default' },
+					_react2.default.createElement(
+						'h1',
+						null,
+						'Create-A-Layout'
+					)
+				),
 				_react2.default.createElement(_Controls2.default, {
 					addRect: this.addRect,
 					clearBoard: this.clearBoard,
@@ -22757,23 +22766,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /--------------------------
 */
 var controlStyles = {
-	backgroundColor: '#ddd',
-	display: 'flex',
-	height: 500,
-	maxHeight: 500,
-	flexDirection: 'column',
-	margin: '0 10px 0 0',
-	padding: '0 20px',
-	width: 350
+	backgroundColor: '#ddd'
 };
 
 var buttonStyle = {
 	margin: '20px auto',
-	width: '60%'
+	width: '100%'
 };
 
 var fieldStyle = {
-	padding: 5
+	padding: 5,
+	width: '100%'
+};
+var listStyle = {
+	margin: '10px 0 0 0'
 };
 
 /*------------------------
@@ -22801,6 +22807,7 @@ var Controls = function (_Component) {
 		_this.handleSaveName = _this.handleSaveName.bind(_this);
 		_this.handleSave = _this.handleSave.bind(_this);
 		_this.handleDelete = _this.handleDelete.bind(_this);
+		_this.handleDropdown = _this.handleDropdown.bind(_this);
 		return _this;
 	}
 
@@ -22829,6 +22836,7 @@ var Controls = function (_Component) {
 			// check if input is empty
 			if (this.state.saveName == '') {
 				// TODO need better UI/UX
+				document.querySelector('#layoutName').focus();
 				alert('Please enter a name for the layout before saving. Thanks.');
 				return;
 			}
@@ -22902,11 +22910,21 @@ var Controls = function (_Component) {
 			this.props.deleteSavedLayout(this.state.selectedName);
 		}
 	}, {
+		key: 'handleDropdown',
+		value: function handleDropdown() {
+			var dropdown = document.querySelector('#dropdown');
+			if (dropdown.style.display == 'none') {
+				dropdown.style.display = 'block';
+			} else {
+				dropdown.style.display = 'none';
+			}
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			return _react2.default.createElement(
 				'div',
-				{ id: 'controls', style: controlStyles },
+				{ className: 'col-md-2', id: 'controls', style: controlStyles },
 				_react2.default.createElement(
 					'button',
 					{
@@ -22924,6 +22942,7 @@ var Controls = function (_Component) {
 					'Clear Board'
 				),
 				_react2.default.createElement('input', {
+					className: 'form-control',
 					id: 'layoutName',
 					type: 'text',
 					maxLength: '20',
@@ -22944,6 +22963,7 @@ var Controls = function (_Component) {
 				_react2.default.createElement(
 					'select',
 					{
+						className: 'form-control',
 						id: 'select',
 						style: fieldStyle,
 						onChange: this.handleLayoutChange },
@@ -22967,7 +22987,128 @@ var Controls = function (_Component) {
 						className: 'btn btn-danger',
 						style: buttonStyle,
 						onClick: this.handleDelete },
-					'Delete Selected Layout'
+					'Delete Layout'
+				),
+				_react2.default.createElement(
+					'button',
+					{
+						className: 'btn btn-default',
+						style: buttonStyle,
+						onClick: this.handleDropdown },
+					'Directions ',
+					_react2.default.createElement('span', { className: 'caret' })
+				),
+				_react2.default.createElement(
+					'div',
+					{ id: 'dropdown', style: { display: 'none' } },
+					_react2.default.createElement(
+						'ul',
+						null,
+						_react2.default.createElement(
+							'li',
+							{ style: listStyle },
+							'To add Rectangle:',
+							_react2.default.createElement(
+								'ul',
+								null,
+								_react2.default.createElement(
+									'li',
+									null,
+									'Click \'Add Rectangle\''
+								),
+								_react2.default.createElement(
+									'li',
+									null,
+									'Then drag and resize as desired'
+								)
+							)
+						),
+						_react2.default.createElement(
+							'li',
+							{ style: listStyle },
+							'Click rectangle once to change the color'
+						),
+						_react2.default.createElement(
+							'li',
+							{ style: listStyle },
+							'Click twice to delete rectangle'
+						),
+						_react2.default.createElement(
+							'li',
+							{ style: listStyle },
+							'To clear all rectangles:',
+							_react2.default.createElement(
+								'ul',
+								null,
+								_react2.default.createElement(
+									'li',
+									null,
+									'click \'Clear Board\''
+								)
+							)
+						),
+						_react2.default.createElement(
+							'li',
+							{ style: listStyle },
+							'To save:',
+							_react2.default.createElement(
+								'ul',
+								null,
+								_react2.default.createElement(
+									'li',
+									null,
+									'Enter a name'
+								),
+								_react2.default.createElement(
+									'li',
+									null,
+									'Click \'Save Layout\''
+								)
+							)
+						),
+						_react2.default.createElement(
+							'li',
+							{ style: listStyle },
+							'To load saved layout:',
+							_react2.default.createElement(
+								'ul',
+								null,
+								_react2.default.createElement(
+									'li',
+									null,
+									'Select a layout name from the list'
+								)
+							)
+						),
+						_react2.default.createElement(
+							'li',
+							{ style: listStyle },
+							'To delete a layout:',
+							_react2.default.createElement(
+								'ul',
+								null,
+								_react2.default.createElement(
+									'li',
+									null,
+									'Select a layout from the list'
+								),
+								_react2.default.createElement(
+									'li',
+									null,
+									'Click \'Delete Layout\''
+								)
+							)
+						)
+					)
+				),
+				_react2.default.createElement(
+					'div',
+					{ style: { margin: '0 0 10px 0', textAlign: 'center' } },
+					_react2.default.createElement(
+						'a',
+						{ href: 'https://github.com/guitarplrc/rect-proj2', target: '_blank' },
+						'Take a look at the code here!'
+					)
 				)
 			);
 		}
@@ -23069,7 +23210,7 @@ var Board = function (_Component) {
 			}
 			return _react2.default.createElement(
 				'div',
-				{ id: 'board' },
+				{ className: 'col-md-10', id: 'board' },
 				list
 			);
 		}
