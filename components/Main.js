@@ -88,12 +88,15 @@ export default class Main extends Component {
 				loadingSave: true,
 				howManyRects: array.length
 			});
-		}, 100);
+		}, 50);
 	}
 
 	render() {
 		return (
-			<div style={{ display: 'flex', padding: '20px' }}>
+			<div className="container-fluid">
+				<nav className="navbar navbar-default">
+					<h1>Create-A-Layout</h1>
+				</nav>
 				<Controls
 					addRect={this.addRect}
 					clearBoard={this.clearBoard}

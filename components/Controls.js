@@ -7,23 +7,20 @@ import React, { Component } from 'react';
 /--------------------------
 */
 let controlStyles = {
-	backgroundColor: '#ddd',
-	display: 'flex',
-	height: 500,
-	maxHeight: 500,
-	flexDirection: 'column',
-	margin: '0 10px 0 0',
-	padding: '0 20px',
-	width: 350
+	backgroundColor: '#ddd'
 };
 
 let buttonStyle = {
 	margin: '20px auto',
-	width: '60%'
+	width: '100%'
 };
 
 let fieldStyle = {
-	padding: 5
+	padding: 5,
+	width: '100%'
+};
+let listStyle = {
+	margin: '10px 0 0 0'
 };
 
 /*------------------------
@@ -46,6 +43,7 @@ export default class Controls extends Component {
 		this.handleSaveName = this.handleSaveName.bind(this);
 		this.handleSave = this.handleSave.bind(this);
 		this.handleDelete = this.handleDelete.bind(this);
+		this.handleDropdown = this.handleDropdown.bind(this);
 	}
 
 	clearBoard() {
@@ -65,6 +63,7 @@ export default class Controls extends Component {
 		// check if input is empty
 		if (this.state.saveName == '') {
 			// TODO need better UI/UX
+			document.querySelector('#layoutName').focus();
 			alert('Please enter a name for the layout before saving. Thanks.');
 			return;
 		}
@@ -139,9 +138,18 @@ export default class Controls extends Component {
 		this.props.deleteSavedLayout(this.state.selectedName);
 	}
 
+	handleDropdown() {
+		let dropdown = document.querySelector('#dropdown');
+		if (dropdown.style.display == 'none') {
+			dropdown.style.display = 'block';
+		} else {
+			dropdown.style.display = 'none';
+		}
+	}
+
 	render() {
 		return (
-			<div id="controls" style={controlStyles}>
+			<div className="col-md-2" id="controls" style={controlStyles}>
 				<button
 					onClick={this.props.addRect}
 					className="btn btn-primary"
@@ -157,6 +165,7 @@ export default class Controls extends Component {
 				</button>
 
 				<input
+					className="form-control"
 					id="layoutName"
 					type="text"
 					maxLength="20"
@@ -175,6 +184,7 @@ export default class Controls extends Component {
 				</button>
 
 				<select
+					className="form-control"
 					id="select"
 					style={fieldStyle}
 					onChange={this.handleLayoutChange}>
@@ -190,8 +200,60 @@ export default class Controls extends Component {
 					className="btn btn-danger"
 					style={buttonStyle}
 					onClick={this.handleDelete}>
-					Delete Selected Layout
+					Delete Layout
 				</button>
+
+				<button
+					className="btn btn-default"
+					style={buttonStyle}
+					onClick={this.handleDropdown}>
+					Directions <span className="caret" />
+				</button>
+				<div id="dropdown" style={{ display: 'none' }}>
+					<ul>
+						<li style={listStyle}>
+							To add Rectangle:
+							<ul>
+								<li>Click 'Add Rectangle'</li>
+								<li>Then drag and resize as desired</li>
+							</ul>
+						</li>
+						<li style={listStyle}>Click rectangle once to change the color</li>
+						<li style={listStyle}>Click twice to delete rectangle</li>
+						<li style={listStyle}>
+							To clear all rectangles:
+							<ul>
+								<li>click 'Clear Board'</li>
+							</ul>
+						</li>
+						<li style={listStyle}>
+							To save:
+							<ul>
+								<li>Enter a name</li>
+								<li>Click 'Save Layout'</li>
+							</ul>
+						</li>
+						<li style={listStyle}>
+							To load saved layout:
+							<ul>
+								<li>Select a layout name from the list</li>
+							</ul>
+						</li>
+						<li style={listStyle}>
+							To delete a layout:
+							<ul>
+								<li>Select a layout from the list</li>
+								<li>Click 'Delete Layout'</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+
+				<div style={{ margin: '0 0 10px 0', textAlign: 'center' }}>
+					<a href="https://github.com/guitarplrc/rect-proj2" target="_blank">
+						Take a look at the code here!
+					</a>
+				</div>
 			</div>
 		);
 	}

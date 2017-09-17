@@ -59,6 +59,10 @@ export default class Board extends Component {
 						);
 			}
 		}
-		return <div id="board">{list}</div>;
+		return (
+			<div className="col-md-10" id="board">
+				{list}
+			</div>
+		);
 	}
 }
