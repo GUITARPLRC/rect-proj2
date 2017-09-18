@@ -5,8 +5,12 @@ using React
 
 ### To Install
 
-```npm install
+```
+npm install
+```
 
 ### To Run
 
-```npm run
+```
+npm run
+```
