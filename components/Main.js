@@ -15,9 +15,8 @@ export default class Main extends Component {
 		super();
 		this.state = {
 			layoutList: null, // to render options list
-			showing: true, // to clear rects
-			loadingSave: false, // loading check
-			arrayOfRects: []
+			arrayOfRects: [],
+			counter: 0
 		};
 
 		this.addRect = this.addRect.bind(this);
@@ -34,14 +33,16 @@ export default class Main extends Component {
 
 	addRect() {
 		let array = this.state.arrayOfRects;
-		array.push({
-			id: array.length++,
+
+		let newRect = {
+			id: this.state.counter,
 			x: 0,
 			y: 0,
 			width: 200,
 			height: 100
-		});
-		this.setState({ arrayOfRects: array, showing: true });
+		};
+		array.push(newRect);
+		this.setState({ arrayOfRects: array, counter: this.state.counter + 1 });
 	}
 
 	populateSavedLayouts() {
@@ -74,7 +75,7 @@ export default class Main extends Component {
 	}
 
 	clearBoard() {
-		this.setState({ arrayOfRects: [], showing: false, loadingSave: false });
+		this.setState({ arrayOfRects: [], showing: false });
 	}
 
 	handleSavedLayout(array) {
@@ -82,18 +83,16 @@ export default class Main extends Component {
 
 		setTimeout(() => {
 			this.setState({
-				arrayOfRects: array,
-				showing: true,
-				loadingSave: true
+				arrayOfRects: array
 			});
 		}, 50);
 	}
 
-	handleDeleteRect(id) {
-		let array = [...this.state.arrayOfRects];
-		let newArray = array.splice(id, 1);
-		console.log(newArray);
-		this.setState({ arrayOfRects: newArray });
+	handleDeleteRect(obj) {
+		let array = this.state.arrayOfRects;
+		let index = array.findIndex(each => each.id === obj.props.id);
+		array.splice(index, 1);
+		this.setState({ arrayOfRects: array });
 	}
 
 	render() {
@@ -111,7 +110,6 @@ export default class Main extends Component {
 					handleSavedLayout={this.handleSavedLayout}
 				/>
 				<Board
-					showing={this.state.showing}
 					arrayOfRects={this.state.arrayOfRects}
 					handleDeleteRect={this.handleDeleteRect}
 				/>

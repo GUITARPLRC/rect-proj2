@@ -14,7 +14,6 @@ export default class Rect extends Component {
 		super(props);
 		this.state = {
 			color: null,
-			showing: true,
 			x: 0,
 			y: 0,
 			width: 200,
@@ -39,12 +38,12 @@ export default class Rect extends Component {
 	}
 
 	componentDidMount() {
-		if (this.props.rect) {
+		if (this.props.rect.bgColor) {
 			this.setState({ color: this.props.rect.bgColor });
 			return;
+		} else {
+			this.handleSingleClick(); // set color of rects if not loading saved
 		}
-
-		this.handleSingleClick(); // set color of rects if not loading saved
 	}
 
 	handleSingleClick() {
@@ -53,16 +52,15 @@ export default class Rect extends Component {
 		this.setState({ color });
 	}
 
-	handleDoubleClick(id) {
-		this.setState({ showing: false });
-		this.props.handleDeleteRect(id);
+	handleDoubleClick(obj) {
+		this.props.handleDeleteRect(obj);
 	}
 
 	render() {
 		return (
 			<div
 				onClick={this.handleSingleClick}
-				onDoubleClick={() => this.handleDoubleClick(this.props.id)}>
+				onDoubleClick={() => this.handleDoubleClick(this)}>
 				<Rnd
 					default={{
 						x: this.state.x,
