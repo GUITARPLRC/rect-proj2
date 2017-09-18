@@ -14,19 +14,18 @@ export default class Main extends Component {
 	constructor() {
 		super();
 		this.state = {
-			howManyRects: 0, // so app knows how many rects to render
 			layoutList: null, // to render options list
 			showing: true, // to clear rects
 			loadingSave: false, // loading check
-			savedArray: null
+			arrayOfRects: []
 		};
 
 		this.addRect = this.addRect.bind(this);
-		this.handleHowManyRects = this.handleHowManyRects.bind(this);
 		this.populateSavedLayouts = this.populateSavedLayouts.bind(this);
 		this.deleteSavedLayout = this.deleteSavedLayout.bind(this);
 		this.clearBoard = this.clearBoard.bind(this);
 		this.handleSavedLayout = this.handleSavedLayout.bind(this);
+		this.handleDeleteRect = this.handleDeleteRect.bind(this);
 	}
 
 	componentWillMount() {
@@ -34,14 +33,15 @@ export default class Main extends Component {
 	}
 
 	addRect() {
-		let howMany = this.state.howManyRects + 1;
-
-		this.setState({ howManyRects: howMany, showing: true });
-	}
-
-	// used to clear board in Control Component
-	handleHowManyRects(number) {
-		this.setState({ howManyRects: number });
+		let array = this.state.arrayOfRects;
+		array.push({
+			id: array.length++,
+			x: 0,
+			y: 0,
+			width: 200,
+			height: 100
+		});
+		this.setState({ arrayOfRects: array, showing: true });
 	}
 
 	populateSavedLayouts() {
@@ -74,8 +74,7 @@ export default class Main extends Component {
 	}
 
 	clearBoard() {
-		this.setState({ showing: false, loadingSave: false });
-		this.handleHowManyRects(0);
+		this.setState({ arrayOfRects: [], showing: false, loadingSave: false });
 	}
 
 	handleSavedLayout(array) {
@@ -83,12 +82,18 @@ export default class Main extends Component {
 
 		setTimeout(() => {
 			this.setState({
-				savedArray: array,
+				arrayOfRects: array,
 				showing: true,
-				loadingSave: true,
-				howManyRects: array.length
+				loadingSave: true
 			});
 		}, 50);
+	}
+
+	handleDeleteRect(id) {
+		let array = [...this.state.arrayOfRects];
+		let newArray = array.splice(id, 1);
+		console.log(newArray);
+		this.setState({ arrayOfRects: newArray });
 	}
 
 	render() {
@@ -102,25 +107,14 @@ export default class Main extends Component {
 					clearBoard={this.clearBoard}
 					deleteSavedLayout={this.deleteSavedLayout}
 					populateSavedLayouts={this.populateSavedLayouts}
-					handleHowManyRects={this.handleHowManyRects}
 					layoutList={this.state.layoutList}
-					howManyRects={this.state.howManyRects}
 					handleSavedLayout={this.handleSavedLayout}
 				/>
-				{this.state.loadingSave ? (
-					<Board
-						howManyRects={this.state.howManyRects}
-						handleHowManyRects={this.handleHowManyRects}
-						showing={this.state.showing}
-						savedArray={this.state.savedArray}
-					/>
-				) : (
-					<Board
-						howManyRects={this.state.howManyRects}
-						handleHowManyRects={this.handleHowManyRects}
-						showing={this.state.showing}
-					/>
-				)}
+				<Board
+					showing={this.state.showing}
+					arrayOfRects={this.state.arrayOfRects}
+					handleDeleteRect={this.handleDeleteRect}
+				/>
 			</div>
 		);
 	}

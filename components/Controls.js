@@ -72,23 +72,27 @@ export default class Controls extends Component {
 		let elements = []; // to store layout rect props for localStorage
 
 		if (board.children) {
-			[...board.children].forEach(each => {
-				// to get translateX
-				let x1 = each.firstChild.style.transform.indexOf('(');
-				let x2 = each.firstChild.style.transform.indexOf(',');
+			for (let i = 0; i < board.children.length; i++) {
+				let x1 = board.children[i].firstChild.style.transform.indexOf('(');
+				let x2 = board.children[i].firstChild.style.transform.indexOf(',');
 
 				// to get translateY
-				let y1 = each.firstChild.style.transform.indexOf(',');
-				let y2 = each.firstChild.style.transform.indexOf(')');
+				let y1 = board.children[i].firstChild.style.transform.indexOf(',');
+				let y2 = board.children[i].firstChild.style.transform.indexOf(')');
 
 				elements.push({
-					width: each.firstChild.style.width,
-					height: each.firstChild.style.height,
-					x: parseInt(each.firstChild.style.transform.slice(x1 + 1, x2 - 2)),
-					y: parseInt(each.firstChild.style.transform.slice(y1 + 1, y2 - 1)),
-					bgColor: each.firstChild.style.backgroundColor
+					id: i,
+					width: board.children[i].firstChild.style.width,
+					height: board.children[i].firstChild.style.height,
+					x: parseInt(
+						board.children[i].firstChild.style.transform.slice(x1 + 1, x2 - 2)
+					),
+					y: parseInt(
+						board.children[i].firstChild.style.transform.slice(y1 + 1, y2 - 1)
+					),
+					bgColor: board.children[i].firstChild.style.backgroundColor
 				});
-			});
+			}
 		}
 
 		if (localStorage) {

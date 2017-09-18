@@ -33,31 +33,19 @@ export default class Board extends Component {
 
 	render() {
 		let list = [];
-		let howMany = this.props.howManyRects;
+		let length = this.props.arrayOfRects.length || 0;
 
-		for (let i = 0; i < howMany; i++) {
-			{
-				this.props.savedArray
-					? list.push(
-							<Rect
-								key={i}
-								pickColor={this.pickColor}
-								showing={this.props.showing}
-								howManyRects={this.props.howManyRects}
-								handleHowManyRects={this.props.handleHowManyRects}
-								savedArray={this.props.savedArray[i]}
-							/>
-						)
-					: list.push(
-							<Rect
-								key={i}
-								pickColor={this.pickColor}
-								showing={this.props.showing}
-								howManyRects={this.props.howManyRects}
-								handleHowManyRects={this.props.handleHowManyRects}
-							/>
-						);
-			}
+		for (let i = 0; i < length; i++) {
+			list.push(
+				<Rect
+					key={i}
+					id={i}
+					pickColor={this.pickColor}
+					showing={this.props.showing}
+					rect={this.props.arrayOfRects[i]}
+					handleDeleteRect={this.props.handleDeleteRect}
+				/>
+			);
 		}
 		return (
 			<div className="col-md-10" id="board">

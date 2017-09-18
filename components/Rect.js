@@ -26,8 +26,8 @@ export default class Rect extends Component {
 	}
 
 	componentWillMount() {
-		if (this.props.savedArray) {
-			let saved = this.props.savedArray;
+		if (this.props.rect) {
+			let saved = this.props.rect;
 			this.setState({
 				color: saved.color,
 				x: saved.x,
@@ -39,8 +39,8 @@ export default class Rect extends Component {
 	}
 
 	componentDidMount() {
-		if (this.props.savedArray) {
-			this.setState({ color: this.props.savedArray.bgColor });
+		if (this.props.rect) {
+			this.setState({ color: this.props.rect.bgColor });
 			return;
 		}
 
@@ -53,32 +53,28 @@ export default class Rect extends Component {
 		this.setState({ color });
 	}
 
-	handleDoubleClick() {
-		this.setState({ showing: !this.state.showing });
-
-		let howMany = this.props.howManyRects;
-		this.props.handleHowManyRects((howMany -= 1));
+	handleDoubleClick(id) {
+		this.setState({ showing: false });
+		this.props.handleDeleteRect(id);
 	}
 
 	render() {
 		return (
 			<div
 				onClick={this.handleSingleClick}
-				onDoubleClick={this.handleDoubleClick}>
-				{this.state.showing && (
-					<Rnd
-						default={{
-							x: this.state.x,
-							y: this.state.y,
-							width: this.state.width,
-							height: this.state.height
-						}}
-						style={{
-							backgroundColor: this.state.color,
-							border: '1px solid #000'
-						}}
-					/>
-				)}
+				onDoubleClick={() => this.handleDoubleClick(this.props.id)}>
+				<Rnd
+					default={{
+						x: this.state.x,
+						y: this.state.y,
+						width: this.state.width,
+						height: this.state.height
+					}}
+					style={{
+						backgroundColor: this.state.color,
+						border: '1px solid #000'
+					}}
+				/>
 			</div>
 		);
 	}

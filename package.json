@@ -1,8 +1,7 @@
 {
 	"name": "rect-proj2",
 	"version": "1.0.0",
-	"description":
-		"Simple create rectangle, resize, and drag with layout create and save options.",
+	"description": "Simple create rectangle, resize, and drag with layout create and save options.",
 	"main": "webpack.config.js",
 	"dependencies": {
 		"babel-core": "^6.26.0",
