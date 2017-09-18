@@ -13,4 +13,6 @@ npm install
 
 ```
 npm run
+// in index.html change script src from ./dist/index.bundle.js to ./index.bundle.js
+// for updating any changes
 ```
