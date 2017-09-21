@@ -18,7 +18,7 @@ export default class Main extends Component {
 	}
 
 	addRect() {
-		let arrayOfRects = JSON.parse(localStorage.getItem(this.state.arrayOfRects));
+		let arrayOfRects = this.state.arrayOfRects;
 		let id = new Date().getTime();
 
 		arrayOfRects.push(
