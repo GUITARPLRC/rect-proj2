@@ -15,8 +15,7 @@ export default class Main extends Component {
 		super();
 		this.state = {
 			layoutList: null, // to render options list
-			arrayOfRects: [],
-			counter: 0
+			arrayOfRects: []
 		};
 
 		this.addRect = this.addRect.bind(this);
@@ -32,17 +31,19 @@ export default class Main extends Component {
 	}
 
 	addRect() {
-		let array = this.state.arrayOfRects;
+		let arrayOfRects = [...this.state.arrayOfRects];
+
+		let id = new Date().getTime();
 
 		let newRect = {
-			id: this.state.counter,
+			id,
 			x: 0,
 			y: 0,
 			width: 200,
 			height: 100
 		};
-		array.push(newRect);
-		this.setState({ arrayOfRects: array, counter: this.state.counter + 1 });
+		arrayOfRects.push(newRect);
+		this.setState({ arrayOfRects });
 	}
 
 	populateSavedLayouts() {
@@ -75,7 +76,7 @@ export default class Main extends Component {
 	}
 
 	clearBoard() {
-		this.setState({ arrayOfRects: [], showing: false });
+		this.setState({ arrayOfRects: [] });
 	}
 
 	handleSavedLayout(array) {
@@ -89,10 +90,13 @@ export default class Main extends Component {
 	}
 
 	handleDeleteRect(obj) {
-		let array = this.state.arrayOfRects;
-		let index = array.findIndex(each => each.id === obj.props.id);
-		array.splice(index, 1);
-		this.setState({ arrayOfRects: array });
+		let arrayOfRects = [...this.state.arrayOfRects];
+		for (let i = 0; i < arrayOfRects.length; i++) {
+			if (arrayOfRects[i].id == obj.props.rect.id) {
+				arrayOfRects.splice(i, 1);
+			}
+		}
+		this.setState({ arrayOfRects });
 	}
 
 	render() {

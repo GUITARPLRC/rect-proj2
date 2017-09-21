@@ -39,9 +39,7 @@ export default class Board extends Component {
 			list.push(
 				<Rect
 					key={i}
-					id={i}
 					pickColor={this.pickColor}
-					showing={this.props.showing}
 					rect={this.props.arrayOfRects[i]}
 					handleDeleteRect={this.props.handleDeleteRect}
 				/>

@@ -25,7 +25,7 @@ export default class Rect extends Component {
 	}
 
 	componentWillMount() {
-		if (this.props.rect) {
+		if (this.props.rect.x) {
 			let saved = this.props.rect;
 			this.setState({
 				color: saved.color,
@@ -40,7 +40,6 @@ export default class Rect extends Component {
 	componentDidMount() {
 		if (this.props.rect.bgColor) {
 			this.setState({ color: this.props.rect.bgColor });
-			return;
 		} else {
 			this.handleSingleClick(); // set color of rects if not loading saved
 		}

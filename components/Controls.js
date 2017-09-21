@@ -80,8 +80,10 @@ export default class Controls extends Component {
 				let y1 = board.children[i].firstChild.style.transform.indexOf(',');
 				let y2 = board.children[i].firstChild.style.transform.indexOf(')');
 
+				let id = new Date().getTime();
+
 				elements.push({
-					id: i,
+					id,
 					width: board.children[i].firstChild.style.width,
 					height: board.children[i].firstChild.style.height,
 					x: parseInt(
