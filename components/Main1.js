@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import Controls from './Controls1';
 import Board from './Board1';
 import Rect from './Rect1';
 
@@ -17,34 +18,26 @@ export default class Main extends Component {
 	}
 
 	addRect() {
-		let arrayOfRects = [...this.state.arrayOfRects];
+		let arrayOfRects = JSON.parse(localStorage.getItem(this.state.arrayOfRects));
 		let id = new Date().getTime();
+
 		arrayOfRects.push(
-			<Rect
-				key={id}
-				id={id}
-				deleteRect={this.deleteRect}
-				updateSize={this.updateSize}
-				updateLocation={this.updateLocation}
-				x={0}
-				y={0}
-				z={0}
-				width={200}
-				height={100}
-			/>
+			<Rect key={id} id={id} x={0} y={0} z={0} width={200} height={100} deleteRect={this.deleteRect} />
 		);
 
 		this.setState({ arrayOfRects });
 	}
 
 	deleteRect(obj) {
-		let arrayOfRects = [...this.state.arrayOfRects];
+		let arrayOfRects = JSON.parse(localStorage.getItem(this.state.arrayOfRects));
+
 		for (let i = 0; i < arrayOfRects.length; i++) {
 			if (arrayOfRects[i].key == obj.props.id) {
 				arrayOfRects.splice(i, 1);
 				break;
 			}
 		}
+
 		this.setState({ arrayOfRects });
 	}
 
@@ -54,6 +47,7 @@ export default class Main extends Component {
 
 		if (board.children) {
 			for (let i = 0; i < board.children.length; i++) {
+				// to get translateX
 				let x1 = board.children[i].firstChild.firstChild.style.transform.indexOf('(');
 				let x2 = board.children[i].firstChild.firstChild.style.transform.indexOf(',');
 
@@ -63,57 +57,55 @@ export default class Main extends Component {
 
 				let z = Number(board.children[i].firstChild.firstChild.style.zIndex);
 
+				let width = board.children[i].firstChild.firstChild.style.width;
+
+				let height = board.children[i].firstChild.firstChild.style.height;
+
 				let id = this.state.arrayOfRects[i].key;
 
 				elements.push({
 					id,
-					width: board.children[i].firstChild.firstChild.style.width,
-					height: board.children[i].firstChild.firstChild.style.height,
+					width,
+					height,
+					z,
 					x: parseInt(board.children[i].firstChild.firstChild.style.transform.slice(x1 + 1, x2 - 2)),
 					y: parseInt(board.children[i].firstChild.firstChild.style.transform.slice(y1 + 1, y2 - 1)),
-					bgColor: board.children[i].firstChild.firstChild.style.backgroundColor,
-					z
+					bgColor: board.children[i].firstChild.firstChild.style.backgroundColor
 				});
 			}
 		}
+
 		localStorage.setItem('arrayOfRects', JSON.stringify(elements));
 	}
 
 	loadLayout() {
 		let layout = JSON.parse(localStorage.getItem('arrayOfRects'));
 		let arrayOfRects = [];
+
 		for (let i = 0; i < layout.length; i++) {
 			arrayOfRects.push(
 				<Rect
 					key={layout[i].id}
 					id={layout[i].id}
-					deleteRect={this.deleteRect}
-					updateSize={this.updateSize}
-					updateLocation={this.updateLocation}
 					x={layout[i].x}
 					y={layout[i].y}
 					z={layout[i].z}
 					width={layout[i].width}
 					height={layout[i].height}
 					bgColor={layout[i].bgColor}
+					deleteRect={this.deleteRect}
 				/>
 			);
 		}
+
 		this.setState({ arrayOfRects });
 	}
 
 	render() {
 		return (
 			<div>
-				<button onClick={this.addRect}>Add</button>
-				<button onClick={this.saveLayout}>Save Layout</button>
-				<button onClick={this.loadLayout}>Load Layout</button>
-				<Board
-					deleteRect={this.deleteRect}
-					arrayOfRects={this.state.arrayOfRects}
-					updateSize={this.updateSize}
-					updateLocation={this.updateLocation}
-				/>
+				<Controls addRect={this.addRect} saveLayout={this.saveLayout} loadLayout={this.loadLayout} />
+				<Board deleteRect={this.deleteRect} arrayOfRects={this.state.arrayOfRects} />
 			</div>
 		);
 	}

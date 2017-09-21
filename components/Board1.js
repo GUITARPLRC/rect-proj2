@@ -6,6 +6,7 @@ export default class Board extends Component {
 	render() {
 		let array = this.props.arrayOfRects;
 		let list = array.map(each => <div key={each.key}>{each}</div>);
+
 		return <div id="board">{list}</div>;
 	}
 }
