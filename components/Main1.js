@@ -14,8 +14,6 @@ export default class Main extends Component {
 		this.deleteRect = this.deleteRect.bind(this);
 		this.saveLayout = this.saveLayout.bind(this);
 		this.loadLayout = this.loadLayout.bind(this);
-		this.updateSize = this.updateSize.bind(this);
-		this.updateLocation = this.updateLocation.bind(this);
 	}
 
 	addRect() {
@@ -28,6 +26,11 @@ export default class Main extends Component {
 				deleteRect={this.deleteRect}
 				updateSize={this.updateSize}
 				updateLocation={this.updateLocation}
+				x={0}
+				y={0}
+				z={0}
+				width={200}
+				height={100}
 			/>
 		);
 
@@ -46,10 +49,34 @@ export default class Main extends Component {
 	}
 
 	saveLayout() {
-		localStorage.setItem(
-			'arrayOfRects',
-			JSON.stringify(this.state.arrayOfRects)
-		);
+		let board = document.querySelector('#board');
+		let elements = []; // to store layout rect props for localStorage
+
+		if (board.children) {
+			for (let i = 0; i < board.children.length; i++) {
+				let x1 = board.children[i].firstChild.firstChild.style.transform.indexOf('(');
+				let x2 = board.children[i].firstChild.firstChild.style.transform.indexOf(',');
+
+				// to get translateY
+				let y1 = board.children[i].firstChild.firstChild.style.transform.indexOf(',');
+				let y2 = board.children[i].firstChild.firstChild.style.transform.indexOf(')');
+
+				let z = Number(board.children[i].firstChild.firstChild.style.zIndex);
+
+				let id = this.state.arrayOfRects[i].key;
+
+				elements.push({
+					id,
+					width: board.children[i].firstChild.firstChild.style.width,
+					height: board.children[i].firstChild.firstChild.style.height,
+					x: parseInt(board.children[i].firstChild.firstChild.style.transform.slice(x1 + 1, x2 - 2)),
+					y: parseInt(board.children[i].firstChild.firstChild.style.transform.slice(y1 + 1, y2 - 1)),
+					bgColor: board.children[i].firstChild.firstChild.style.backgroundColor,
+					z
+				});
+			}
+		}
+		localStorage.setItem('arrayOfRects', JSON.stringify(elements));
 	}
 
 	loadLayout() {
@@ -58,35 +85,19 @@ export default class Main extends Component {
 		for (let i = 0; i < layout.length; i++) {
 			arrayOfRects.push(
 				<Rect
-					key={Number(layout[i].key)}
-					id={Number(layout[i].key)}
+					key={layout[i].id}
+					id={layout[i].id}
 					deleteRect={this.deleteRect}
+					updateSize={this.updateSize}
+					updateLocation={this.updateLocation}
+					x={layout[i].x}
+					y={layout[i].y}
+					z={layout[i].z}
+					width={layout[i].width}
+					height={layout[i].height}
+					bgColor={layout[i].bgColor}
 				/>
 			);
-		}
-		this.setState({ arrayOfRects });
-	}
-
-	updateSize(w, h, obj) {
-		let arrayOfRects = [...this.state.arrayOfRects];
-		for (let i = 0; i < arrayOfRects.length; i++) {
-			if (arrayOfRects[i].key == obj.props.id) {
-				arrayOfRects[i].props.width = w;
-				arrayOfRects[i].props.height = h;
-				break;
-			}
-		}
-		this.setState({ arrayOfRects });
-	}
-
-	updateLocation(w, h, obj) {
-		let arrayOfRects = [...this.state.arrayOfRects];
-		for (let i = 0; i < arrayOfRects.length; i++) {
-			if (arrayOfRects[i].key == obj.props.id) {
-				arrayOfRects[i].props.width = w;
-				arrayOfRects[i].props.height = h;
-				break;
-			}
 		}
 		this.setState({ arrayOfRects });
 	}
