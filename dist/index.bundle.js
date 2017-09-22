@@ -9782,15 +9782,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// resize and drag lib
-
-/*------------------------
-/
-/	COMPONENT
-/
-/-------------------------
-*/
-
 var Rect = function (_Component) {
 	_inherits(Rect, _Component);
 
@@ -9800,67 +9791,64 @@ var Rect = function (_Component) {
 		var _this = _possibleConstructorReturn(this, (Rect.__proto__ || Object.getPrototypeOf(Rect)).call(this, props));
 
 		_this.state = {
-			color: null,
-			showing: true,
+			bgColor: null,
+			prevColor: null,
+			width: 200,
+			height: 100,
 			x: 0,
 			y: 0,
-			width: 200,
-			height: 100
+			z: 1
 		};
 
-		_this.handleSingleClick = _this.handleSingleClick.bind(_this);
-		_this.handleDoubleClick = _this.handleDoubleClick.bind(_this);
+		_this.changeColor = _this.changeColor.bind(_this);
 		return _this;
 	}
 
 	_createClass(Rect, [{
 		key: 'componentWillMount',
 		value: function componentWillMount() {
-			if (this.props.savedArray) {
-				var saved = this.props.savedArray;
+			if (this.props.x) {
 				this.setState({
-					color: saved.color,
-					x: saved.x,
-					y: saved.y,
-					width: saved.width,
-					height: saved.height
+					x: this.props.x,
+					y: this.props.y,
+					z: this.props.z,
+					width: this.props.width,
+					height: this.props.height,
+					bgColor: this.props.bgColor
 				});
+			} else {
+				this.changeColor();
 			}
 		}
 	}, {
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			if (this.props.savedArray) {
-				this.setState({ color: this.props.savedArray.bgColor });
-				return;
+		key: 'changeColor',
+		value: function changeColor() {
+			var colors = ['#ddd', '#555', '#999'];
+			var index = Math.floor(Math.random() * 3);
+
+			if (index == this.state.prevColor) {
+				this.changeColor();
 			}
 
-			this.handleSingleClick(); // set color of rects if not loading saved
-		}
-	}, {
-		key: 'handleSingleClick',
-		value: function handleSingleClick() {
-			var color = this.props.pickColor();
+			var color = colors[index];
 
-			this.setState({ color: color });
-		}
-	}, {
-		key: 'handleDoubleClick',
-		value: function handleDoubleClick() {
-			this.setState({ showing: !this.state.showing });
-
-			var howMany = this.props.howManyRects;
-			this.props.handleHowManyRects(howMany -= 1);
+			this.setState({
+				bgColor: color,
+				prevColor: index,
+				z: this.state.z + 1
+			});
 		}
 	}, {
 		key: 'render',
 		value: function render() {
+			var _this2 = this;
+
 			return _react2.default.createElement(
 				'div',
-				{
-					onClick: this.handleSingleClick,
-					onDoubleClick: this.handleDoubleClick },
-				this.state.showing && _react2.default.createElement(_reactRnd2.default, {
+				{ onClick: this.changeColor, onDoubleClick: function onDoubleClick() {
+						return _this2.props.deleteRect(_this2);
+					} },
+				_react2.default.createElement(_reactRnd2.default, {
 					'default': {
 						x: this.state.x,
 						y: this.state.y,
@@ -9868,8 +9856,9 @@ var Rect = function (_Component) {
 						height: this.state.height
 					},
 					style: {
-						backgroundColor: this.state.color,
-						border: '1px solid #000'
+						backgroundColor: this.state.bgColor,
+						border: '1px solid black',
+						zIndex: this.state.z
 					}
 				})
 			);
@@ -22578,18 +22567,14 @@ var _Rect2 = _interopRequireDefault(_Rect);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-/*------------------------
-/
-/	COMPONENT
-/
-/-------------------------
-*/
 var Main = function (_Component) {
 	_inherits(Main, _Component);
 
@@ -22599,41 +22584,154 @@ var Main = function (_Component) {
 		var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this));
 
 		_this.state = {
-			howManyRects: 0, // so app knows how many rects to render
-			layoutList: null, // to render options list
-			showing: true, // to clear rects
-			loadingSave: false, // loading check
-			savedArray: null
+			arrayOfRects: [],
+			saveName: '',
+			layoutList: [],
+			selectedName: ''
 		};
 
 		_this.addRect = _this.addRect.bind(_this);
-		_this.handleHowManyRects = _this.handleHowManyRects.bind(_this);
+		_this.deleteRect = _this.deleteRect.bind(_this);
+		_this.loadLayout = _this.loadLayout.bind(_this);
+		_this.saveLayout = _this.saveLayout.bind(_this);
+		_this.clearBoard = _this.clearBoard.bind(_this);
+		_this.handleSaveName = _this.handleSaveName.bind(_this);
 		_this.populateSavedLayouts = _this.populateSavedLayouts.bind(_this);
 		_this.deleteSavedLayout = _this.deleteSavedLayout.bind(_this);
-		_this.clearBoard = _this.clearBoard.bind(_this);
-		_this.handleSavedLayout = _this.handleSavedLayout.bind(_this);
+		_this.handledSelectedLayout = _this.handledSelectedLayout.bind(_this);
 		return _this;
 	}
 
 	_createClass(Main, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
+		key: 'componentDidMount',
+		value: function componentDidMount() {
 			this.populateSavedLayouts();
 		}
 	}, {
 		key: 'addRect',
 		value: function addRect() {
-			var howMany = this.state.howManyRects + 1;
+			var arrayOfRects = this.state.arrayOfRects;
+			var id = new Date().getTime();
 
-			this.setState({ howManyRects: howMany, showing: true });
+			arrayOfRects.push(_react2.default.createElement(_Rect2.default, { key: id, id: id, x: 0, y: 0, z: 0, width: 200, height: 100, deleteRect: this.deleteRect }));
+
+			this.setState({ arrayOfRects: arrayOfRects });
 		}
-
-		// used to clear board in Control Component
-
 	}, {
-		key: 'handleHowManyRects',
-		value: function handleHowManyRects(number) {
-			this.setState({ howManyRects: number });
+		key: 'deleteRect',
+		value: function deleteRect(obj) {
+			var arrayOfRects = [].concat(_toConsumableArray(this.state.arrayOfRects));
+
+			for (var i = 0; i < arrayOfRects.length; i++) {
+				if (arrayOfRects[i].key == obj.props.id) {
+					arrayOfRects.splice(i, 1);
+					break;
+				}
+			}
+
+			this.setState({ arrayOfRects: arrayOfRects });
+		}
+	}, {
+		key: 'clearBoard',
+		value: function clearBoard() {
+			this.setState({ arrayOfRects: [], saveName: '' });
+
+			// reset select element to default
+			var select = document.querySelector('#select');
+			select.selectedIndex = 0;
+		}
+	}, {
+		key: 'saveLayout',
+		value: function saveLayout() {
+			var board = document.querySelector('#board');
+			var elements = []; // to store layout rect props for localStorage
+
+			if (this.state.saveName == '-- Saved Layouts --' || this.state.saveName == '') {
+				alert('Please enter an name to save the layout');
+				return;
+			}
+
+			var saveName = this.state.saveName + ' layout';
+
+			if (board.children) {
+				for (var i = 0; i < board.children.length; i++) {
+					// to get translateX
+					var x1 = board.children[i].firstChild.firstChild.style.transform.indexOf('(');
+					var x2 = board.children[i].firstChild.firstChild.style.transform.indexOf(',');
+					var x = parseInt(board.children[i].firstChild.firstChild.style.transform.slice(x1 + 1, x2 - 2));
+
+					// to get translateY
+					var y1 = board.children[i].firstChild.firstChild.style.transform.indexOf(',');
+					var y2 = board.children[i].firstChild.firstChild.style.transform.indexOf(')');
+					var y = parseInt(board.children[i].firstChild.firstChild.style.transform.slice(y1 + 1, y2 - 1));
+
+					var z = Number(board.children[i].firstChild.firstChild.style.zIndex);
+
+					var width = board.children[i].firstChild.firstChild.style.width;
+
+					var height = board.children[i].firstChild.firstChild.style.height;
+
+					var id = this.state.arrayOfRects[i].key;
+
+					var bgColor = board.children[i].firstChild.firstChild.style.backgroundColor;
+
+					elements.push({ id: id, width: width, height: height, x: x, y: y, z: z, bgColor: bgColor });
+				}
+			}
+
+			localStorage.setItem(saveName, JSON.stringify(elements));
+
+			this.populateSavedLayouts();
+		}
+	}, {
+		key: 'loadLayout',
+		value: function loadLayout(layout) {
+			var arrayOfRects = [];
+
+			for (var i = 0; i < layout.length; i++) {
+				arrayOfRects.push(_react2.default.createElement(_Rect2.default, {
+					key: layout[i].id,
+					id: layout[i].id,
+					x: layout[i].x,
+					y: layout[i].y,
+					z: layout[i].z,
+					width: layout[i].width,
+					height: layout[i].height,
+					bgColor: layout[i].bgColor,
+					deleteRect: this.deleteRect
+				}));
+			}
+
+			this.setState({ arrayOfRects: arrayOfRects });
+		}
+	}, {
+		key: 'deleteSavedLayout',
+		value: function deleteSavedLayout() {
+			var name = this.state.selectedName;
+			if (name === '-- Saved Layouts --' || !name) {
+				return;
+			}
+
+			// reset select element to default
+			var select = document.querySelector('#select');
+			select.selectedIndex = 0;
+
+			// reset save name input
+			this.setState({ saveName: '' });
+
+			var layoutName = name + ' layout';
+
+			localStorage.removeItem(layoutName);
+
+			this.clearBoard();
+
+			this.populateSavedLayouts();
+		}
+	}, {
+		key: 'handleSaveName',
+		value: function handleSaveName(event) {
+			var value = event.target.value;
+			this.setState({ saveName: value });
 		}
 	}, {
 		key: 'populateSavedLayouts',
@@ -22652,41 +22750,29 @@ var Main = function (_Component) {
 			this.setState({ layoutList: saveNameList });
 		}
 	}, {
-		key: 'deleteSavedLayout',
-		value: function deleteSavedLayout(name) {
-			if (name === '-- Select Saved Layout --' || !name) {
+		key: 'handledSelectedLayout',
+		value: function handledSelectedLayout(event) {
+			if (event.target.value === '-- Saved Layouts --') {
+				this.setState({ saveName: '' });
 				return;
 			}
 
-			var layoutName = name + ' layout';
+			var name = event.target.value + ' layout';
 
-			localStorage.removeItem(layoutName);
+			// get layout props from localStorage
+			var array = JSON.parse(localStorage.getItem(name));
 
-			this.clearBoard();
+			// set controlled input saveName to help UX
+			this.setState({
+				saveName: event.target.value,
+				selectedName: event.target.value
+			});
 
-			this.populateSavedLayouts();
-		}
-	}, {
-		key: 'clearBoard',
-		value: function clearBoard() {
-			this.setState({ showing: false, loadingSave: false });
-			this.handleHowManyRects(0);
-		}
-	}, {
-		key: 'handleSavedLayout',
-		value: function handleSavedLayout(array) {
-			var _this2 = this;
+			this.loadLayout(array);
 
-			this.clearBoard();
-
-			setTimeout(function () {
-				_this2.setState({
-					savedArray: array,
-					showing: true,
-					loadingSave: true,
-					howManyRects: array.length
-				});
-			}, 50);
+			// reset select element to default
+			var select = document.querySelector('#select');
+			select.selectedIndex = 0;
 		}
 	}, {
 		key: 'render',
@@ -22696,33 +22782,25 @@ var Main = function (_Component) {
 				{ className: 'container-fluid' },
 				_react2.default.createElement(
 					'nav',
-					{ className: 'navbar navbar-default' },
+					{ style: { padding: '0 0 0 15px' }, className: 'navbar navbar-inverse' },
 					_react2.default.createElement(
 						'h1',
-						null,
+						{ style: { color: '#ddd' } },
 						'Create-A-Layout'
 					)
 				),
 				_react2.default.createElement(_Controls2.default, {
 					addRect: this.addRect,
 					clearBoard: this.clearBoard,
+					saveLayout: this.saveLayout,
+					loadLayout: this.loadLayout,
+					handleSaveName: this.handleSaveName,
+					saveName: this.state.saveName,
 					deleteSavedLayout: this.deleteSavedLayout,
-					populateSavedLayouts: this.populateSavedLayouts,
-					handleHowManyRects: this.handleHowManyRects,
 					layoutList: this.state.layoutList,
-					howManyRects: this.state.howManyRects,
-					handleSavedLayout: this.handleSavedLayout
+					handledSelectedLayout: this.handledSelectedLayout
 				}),
-				this.state.loadingSave ? _react2.default.createElement(_Board2.default, {
-					howManyRects: this.state.howManyRects,
-					handleHowManyRects: this.handleHowManyRects,
-					showing: this.state.showing,
-					savedArray: this.state.savedArray
-				}) : _react2.default.createElement(_Board2.default, {
-					howManyRects: this.state.howManyRects,
-					handleHowManyRects: this.handleHowManyRects,
-					showing: this.state.showing
-				})
+				_react2.default.createElement(_Board2.default, { deleteRect: this.deleteRect, arrayOfRects: this.state.arrayOfRects })
 			);
 		}
 	}]);
@@ -22750,8 +22828,6 @@ var _react = __webpack_require__(13);
 var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -22792,185 +22868,49 @@ var listStyle = {
 var Controls = function (_Component) {
 	_inherits(Controls, _Component);
 
-	function Controls(props) {
+	function Controls() {
 		_classCallCheck(this, Controls);
 
-		var _this = _possibleConstructorReturn(this, (Controls.__proto__ || Object.getPrototypeOf(Controls)).call(this, props));
-
-		_this.state = {
-			saveName: '',
-			selectedName: ''
-		};
-
-		_this.clearBoard = _this.clearBoard.bind(_this);
-		_this.handleLayoutChange = _this.handleLayoutChange.bind(_this);
-		_this.handleSaveName = _this.handleSaveName.bind(_this);
-		_this.handleSave = _this.handleSave.bind(_this);
-		_this.handleDelete = _this.handleDelete.bind(_this);
-		_this.handleDropdown = _this.handleDropdown.bind(_this);
-		return _this;
+		return _possibleConstructorReturn(this, (Controls.__proto__ || Object.getPrototypeOf(Controls)).apply(this, arguments));
 	}
 
 	_createClass(Controls, [{
-		key: 'clearBoard',
-		value: function clearBoard() {
-			var select = document.querySelector('#select');
-			select.selectedIndex = 0;
-			this.props.clearBoard();
-			this.setState({ saveName: '' });
-		}
-
-		// to keep input as controlled component
-
-	}, {
-		key: 'handleSaveName',
-		value: function handleSaveName(event) {
-			this.setState({ saveName: event.target.value });
-		}
-
-		// save to localStorage (if possible)
-
-	}, {
-		key: 'handleSave',
-		value: function handleSave() {
-			// check if input is empty
-			if (this.state.saveName == '') {
-				// TODO need better UI/UX
-				document.querySelector('#layoutName').focus();
-				alert('Please enter a name for the layout before saving. Thanks.');
-				return;
-			}
-
-			var board = document.querySelector('#board');
-			var elements = []; // to store layout rect props for localStorage
-
-			if (board.children) {
-				[].concat(_toConsumableArray(board.children)).forEach(function (each) {
-					// to get translateX
-					var x1 = each.firstChild.style.transform.indexOf('(');
-					var x2 = each.firstChild.style.transform.indexOf(',');
-
-					// to get translateY
-					var y1 = each.firstChild.style.transform.indexOf(',');
-					var y2 = each.firstChild.style.transform.indexOf(')');
-
-					elements.push({
-						width: each.firstChild.style.width,
-						height: each.firstChild.style.height,
-						x: parseInt(each.firstChild.style.transform.slice(x1 + 1, x2 - 2)),
-						y: parseInt(each.firstChild.style.transform.slice(y1 + 1, y2 - 1)),
-						bgColor: each.firstChild.style.backgroundColor
-					});
-				});
-			}
-
-			if (localStorage) {
-				localStorage.setItem(this.state.saveName + ' layout', JSON.stringify(elements));
-			} else {
-				// TODO need better UI/UX
-				alert('Sorry you can not save a layout at this time. (ERR: localStorage)');
-			}
-
-			this.props.populateSavedLayouts();
-		}
-
-		// load saved layout
-
-	}, {
-		key: 'handleLayoutChange',
-		value: function handleLayoutChange(event) {
-			if (event.target.value === '-- Select Saved Layout --') {
-				this.setState({ saveName: '' });
-				return;
-			}
-
-			var name = event.target.value + ' layout';
-
-			// get layout props from localStorage
-			var array = JSON.parse(localStorage.getItem(name));
-
-			// set controlled input saveName to help UX
-			this.setState({
-				saveName: event.target.value,
-				selectedName: event.target.value
-			});
-
-			this.props.handleSavedLayout(array);
-		}
-	}, {
-		key: 'handleDelete',
-		value: function handleDelete() {
-			// reset select element to default
-			var select = document.querySelector('#select');
-			select.selectedIndex = 0;
-
-			// reset save name input
-			this.setState({ saveName: '' });
-
-			this.props.deleteSavedLayout(this.state.selectedName);
-		}
-	}, {
-		key: 'handleDropdown',
-		value: function handleDropdown() {
-			var dropdown = document.querySelector('#dropdown');
-			if (dropdown.style.display == 'none') {
-				dropdown.style.display = 'block';
-			} else {
-				dropdown.style.display = 'none';
-			}
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 			return _react2.default.createElement(
 				'div',
-				{ className: 'col-md-2', id: 'controls', style: controlStyles },
+				{ className: 'col-md-2', style: controlStyles },
 				_react2.default.createElement(
 					'button',
-					{
-						onClick: this.props.addRect,
-						className: 'btn btn-primary',
-						style: buttonStyle },
+					{ className: 'btn btn-primary', style: buttonStyle, onClick: this.props.addRect },
 					'Add Rectangle'
 				),
 				_react2.default.createElement(
 					'button',
-					{
-						onClick: this.clearBoard,
-						className: 'btn btn-warning',
-						style: buttonStyle },
+					{ className: 'btn btn-warning', style: buttonStyle, onClick: this.props.clearBoard },
 					'Clear Board'
 				),
 				_react2.default.createElement('input', {
 					className: 'form-control',
-					id: 'layoutName',
-					type: 'text',
-					maxLength: '20',
-					placeholder: 'Enter layout name (max: 20)',
 					style: fieldStyle,
-					onChange: this.handleSaveName,
-					value: this.state.saveName
+					type: 'text',
+					placeholder: 'Enter layout name (max:20)',
+					maxLength: '20',
+					value: this.props.saveName,
+					onChange: this.props.handleSaveName
 				}),
 				_react2.default.createElement(
 					'button',
-					{
-						id: 'save',
-						className: 'btn btn-success',
-						style: buttonStyle,
-						onClick: this.handleSave },
+					{ className: 'btn btn-success', style: buttonStyle, onClick: this.props.saveLayout },
 					'Save Layout'
 				),
 				_react2.default.createElement(
 					'select',
-					{
-						className: 'form-control',
-						id: 'select',
-						style: fieldStyle,
-						onChange: this.handleLayoutChange },
+					{ id: 'select', className: 'form-control', onChange: this.props.handledSelectedLayout },
 					_react2.default.createElement(
 						'option',
-						{ 'default': true },
-						'-- Select Saved Layout --'
+						null,
+						'-- Saved Layouts --'
 					),
 					this.props.layoutList && this.props.layoutList.map(function (each, key) {
 						return _react2.default.createElement(
@@ -22982,133 +22922,8 @@ var Controls = function (_Component) {
 				),
 				_react2.default.createElement(
 					'button',
-					{
-						id: 'deleteLayout',
-						className: 'btn btn-danger',
-						style: buttonStyle,
-						onClick: this.handleDelete },
+					{ className: 'btn btn-danger', style: buttonStyle, onClick: this.props.deleteSavedLayout },
 					'Delete Layout'
-				),
-				_react2.default.createElement(
-					'button',
-					{
-						className: 'btn btn-default',
-						style: buttonStyle,
-						onClick: this.handleDropdown },
-					'Directions ',
-					_react2.default.createElement('span', { className: 'caret' })
-				),
-				_react2.default.createElement(
-					'div',
-					{ id: 'dropdown', style: { display: 'none' } },
-					_react2.default.createElement(
-						'ul',
-						null,
-						_react2.default.createElement(
-							'li',
-							{ style: listStyle },
-							'To add Rectangle:',
-							_react2.default.createElement(
-								'ul',
-								null,
-								_react2.default.createElement(
-									'li',
-									null,
-									'Click \'Add Rectangle\''
-								),
-								_react2.default.createElement(
-									'li',
-									null,
-									'Then drag and resize as desired'
-								)
-							)
-						),
-						_react2.default.createElement(
-							'li',
-							{ style: listStyle },
-							'Click rectangle once to change the color'
-						),
-						_react2.default.createElement(
-							'li',
-							{ style: listStyle },
-							'Click twice to delete rectangle'
-						),
-						_react2.default.createElement(
-							'li',
-							{ style: listStyle },
-							'To clear all rectangles:',
-							_react2.default.createElement(
-								'ul',
-								null,
-								_react2.default.createElement(
-									'li',
-									null,
-									'click \'Clear Board\''
-								)
-							)
-						),
-						_react2.default.createElement(
-							'li',
-							{ style: listStyle },
-							'To save:',
-							_react2.default.createElement(
-								'ul',
-								null,
-								_react2.default.createElement(
-									'li',
-									null,
-									'Enter a name'
-								),
-								_react2.default.createElement(
-									'li',
-									null,
-									'Click \'Save Layout\''
-								)
-							)
-						),
-						_react2.default.createElement(
-							'li',
-							{ style: listStyle },
-							'To load saved layout:',
-							_react2.default.createElement(
-								'ul',
-								null,
-								_react2.default.createElement(
-									'li',
-									null,
-									'Select a layout name from the list'
-								)
-							)
-						),
-						_react2.default.createElement(
-							'li',
-							{ style: listStyle },
-							'To delete a layout:',
-							_react2.default.createElement(
-								'ul',
-								null,
-								_react2.default.createElement(
-									'li',
-									null,
-									'Select a layout from the list'
-								),
-								_react2.default.createElement(
-									'li',
-									null,
-									'Click \'Delete Layout\''
-								)
-							)
-						)
-					)
-				),
-				_react2.default.createElement(
-					'div',
-					{ style: { margin: '0 0 10px 0', textAlign: 'center' } },
-					_react2.default.createElement(
-						'a',
-						{ href: 'https://github.com/guitarplrc/rect-proj2', target: '_blank' },
-						'Take a look at the code here!'
-					)
 				)
 			);
 		}
@@ -23148,66 +22963,27 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-/*------------------------
-/
-/	COMPONENT
-/
-/-------------------------
-*/
-
 var Board = function (_Component) {
 	_inherits(Board, _Component);
 
 	function Board() {
 		_classCallCheck(this, Board);
 
-		var _this = _possibleConstructorReturn(this, (Board.__proto__ || Object.getPrototypeOf(Board)).call(this));
-
-		_this.state = {
-			colors: ['#ddd', '#000', '#777'],
-			prevColor: null // check for non duplicates
-		};
-
-		_this.pickColor = _this.pickColor.bind(_this);
-		return _this;
+		return _possibleConstructorReturn(this, (Board.__proto__ || Object.getPrototypeOf(Board)).apply(this, arguments));
 	}
 
 	_createClass(Board, [{
-		key: 'pickColor',
-		value: function pickColor() {
-			var pickColor = Math.floor(Math.random() * this.state.colors.length);
-
-			if (pickColor == this.state.prevColor) {
-				return this.pickColor();
-			} else {
-				this.setState({ prevColor: pickColor });
-				return this.state.colors[pickColor];
-			}
-		}
-	}, {
 		key: 'render',
 		value: function render() {
-			var list = [];
-			var howMany = this.props.howManyRects;
+			var array = this.props.arrayOfRects;
+			var list = array.map(function (each) {
+				return _react2.default.createElement(
+					'div',
+					{ key: each.key },
+					each
+				);
+			});
 
-			for (var i = 0; i < howMany; i++) {
-				{
-					this.props.savedArray ? list.push(_react2.default.createElement(_Rect2.default, {
-						key: i,
-						pickColor: this.pickColor,
-						showing: this.props.showing,
-						howManyRects: this.props.howManyRects,
-						handleHowManyRects: this.props.handleHowManyRects,
-						savedArray: this.props.savedArray[i]
-					})) : list.push(_react2.default.createElement(_Rect2.default, {
-						key: i,
-						pickColor: this.pickColor,
-						showing: this.props.showing,
-						howManyRects: this.props.howManyRects,
-						handleHowManyRects: this.props.handleHowManyRects
-					}));
-				}
-			}
 			return _react2.default.createElement(
 				'div',
 				{ className: 'col-md-10', id: 'board' },

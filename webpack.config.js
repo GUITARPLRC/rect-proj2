@@ -10,22 +10,6 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.css$/,
-				use: 'style-loader!css-loader'
-			},
-			{
-				test: /\.(jpe?g|png|gif|svg)$/i,
-				use: 'file-loader?name=images/[name].[ext]'
-			},
-			{
-				test: /\.(woff2?|svg)$/,
-				use: 'url-loader?limit=10000'
-			},
-			{
-				test: /\.(ttf|eot)$/,
-				use: 'file-loader'
-			},
-			{
 				test: /\.js$/,
 				exclude: /node_modules/,
 				loader: 'babel-loader'
