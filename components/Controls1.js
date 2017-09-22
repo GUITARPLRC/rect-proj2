@@ -46,15 +46,21 @@ export default class Controls extends Component {
 					type="text"
 					placeholder="Enter layout name (max:20)"
 					maxLength="20"
+					value={this.props.saveName}
+					onChange={this.props.handleSaveName}
 				/>
 				<button className="btn btn-success" style={buttonStyle} onClick={this.props.saveLayout}>
 					Save Layout
 				</button>
-				<select className="form-control">
+				<select id="select" className="form-control" onChange={this.props.handledSelectedLayout}>
 					<option>-- Saved Layouts --</option>
+					{this.props.layoutList &&
+						this.props.layoutList.map((each, key) => {
+							return <option key={key}>{each}</option>;
+						})}
 				</select>
-				<button className="btn btn-danger" style={buttonStyle} onClick={this.props.loadLayout}>
-					Load Layout
+				<button className="btn btn-danger" style={buttonStyle} onClick={this.props.deleteSavedLayout}>
+					Delete Layout
 				</button>
 			</div>
 		);

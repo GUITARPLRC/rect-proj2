@@ -7,6 +7,10 @@ export default class Board extends Component {
 		let array = this.props.arrayOfRects;
 		let list = array.map(each => <div key={each.key}>{each}</div>);
 
-		return <div id="board">{list}</div>;
+		return (
+			<div className="col-md-10" id="board">
+				{list}
+			</div>
+		);
 	}
 }
