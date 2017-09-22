@@ -24,5 +24,4 @@ npm run
 #### To Delete Rectangle
 -  click rectangle twice
 
-Note: when clicking rectangle
-as the color changes, it also changes the perspective. So if a rectangle is postioned behind another, clicking it will bring it forward
+Note: when clicking rectangle -- as the color changes, it also changes the perspective. So if a rectangle is postioned behind another, clicking it will bring it forward
