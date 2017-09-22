@@ -22769,10 +22769,6 @@ var Main = function (_Component) {
 			});
 
 			this.loadLayout(array);
-
-			// reset select element to default
-			var select = document.querySelector('#select');
-			select.selectedIndex = 0;
 		}
 	}, {
 		key: 'render',
