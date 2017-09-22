@@ -18,7 +18,7 @@ export default class Rect extends Component {
 		this.changeColor = this.changeColor.bind(this);
 	}
 
-	componentDidMount() {
+	componentWillMount() {
 		if (this.props.x) {
 			this.setState({
 				x: this.props.x,
@@ -52,9 +52,7 @@ export default class Rect extends Component {
 
 	render() {
 		return (
-			<div
-				onClick={this.changeColor}
-				onDoubleClick={() => this.props.deleteRect(this)}>
+			<div onClick={this.changeColor} onDoubleClick={() => this.props.deleteRect(this)}>
 				<Rnd
 					default={{
 						x: this.state.x,
