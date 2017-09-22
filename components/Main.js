@@ -185,10 +185,6 @@ export default class Main extends Component {
 		});
 
 		this.loadLayout(array);
-
-		// reset select element to default
-		let select = document.querySelector('#select');
-		select.selectedIndex = 0;
 	}
 
 	render() {
