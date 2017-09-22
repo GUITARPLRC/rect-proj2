@@ -1,65 +1,58 @@
 import React, { Component } from 'react';
 
-import Rnd from 'react-rnd'; // resize and drag lib
-
-/*------------------------
-/
-/	COMPONENT
-/
-/-------------------------
-*/
+import Rnd from 'react-rnd';
 
 export default class Rect extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			color: null,
+			bgColor: null,
+			prevColor: null,
+			width: 200,
+			height: 100,
 			x: 0,
 			y: 0,
-			width: 200,
-			height: 100
+			z: 1
 		};
 
-		this.handleSingleClick = this.handleSingleClick.bind(this);
-		this.handleDoubleClick = this.handleDoubleClick.bind(this);
+		this.changeColor = this.changeColor.bind(this);
 	}
 
 	componentWillMount() {
-		if (this.props.rect.x) {
-			let saved = this.props.rect;
+		if (this.props.x) {
 			this.setState({
-				color: saved.color,
-				x: saved.x,
-				y: saved.y,
-				width: saved.width,
-				height: saved.height
+				x: this.props.x,
+				y: this.props.y,
+				z: this.props.z,
+				width: this.props.width,
+				height: this.props.height,
+				bgColor: this.props.bgColor
 			});
-		}
-	}
-
-	componentDidMount() {
-		if (this.props.rect.bgColor) {
-			this.setState({ color: this.props.rect.bgColor });
 		} else {
-			this.handleSingleClick(); // set color of rects if not loading saved
+			this.changeColor();
 		}
 	}
 
-	handleSingleClick() {
-		let color = this.props.pickColor();
+	changeColor() {
+		let colors = ['#ddd', '#555', '#999'];
+		let index = Math.floor(Math.random() * 3);
 
-		this.setState({ color });
-	}
+		if (index == this.state.prevColor) {
+			this.changeColor();
+		}
 
-	handleDoubleClick(obj) {
-		this.props.handleDeleteRect(obj);
+		let color = colors[index];
+
+		this.setState({
+			bgColor: color,
+			prevColor: index,
+			z: this.state.z + 1
+		});
 	}
 
 	render() {
 		return (
-			<div
-				onClick={this.handleSingleClick}
-				onDoubleClick={() => this.handleDoubleClick(this)}>
+			<div onClick={this.changeColor} onDoubleClick={() => this.props.deleteRect(this)}>
 				<Rnd
 					default={{
 						x: this.state.x,
@@ -68,8 +61,9 @@ export default class Rect extends Component {
 						height: this.state.height
 					}}
 					style={{
-						backgroundColor: this.state.color,
-						border: '1px solid #000'
+						backgroundColor: this.state.bgColor,
+						border: '1px solid black',
+						zIndex: this.state.z
 					}}
 				/>
 			</div>
